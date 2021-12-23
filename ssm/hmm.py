@@ -255,6 +255,8 @@ class HMM(object):
         pi0 = self.init_state_distn.initial_state_distn
         Ps = self.transitions.transition_matrices(data, input, mask, tag)
         log_likes = self.observations.log_likelihoods(data, input, mask, tag)
+        # For test/viol indices, replace log_likes with 0
+        log_likes[np.where(mask[:,0] == 0), :] = 0
         return hmm_expected_states(pi0, Ps, log_likes)
 
     @ensure_args_not_none
@@ -302,6 +304,8 @@ class HMM(object):
             pi0 = self.init_state_distn.initial_state_distn
             Ps = self.transitions.transition_matrices(data, input, mask, tag)
             log_likes = self.observations.log_likelihoods(data, input, mask, tag)
+            # For test indices/viol indices, replace log_likes with 0
+            log_likes[np.where(mask[:,0] == 0), :] = 0
             ll += hmm_normalizer(pi0, Ps, log_likes)
             assert np.isfinite(ll)
         return ll
