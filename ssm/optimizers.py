@@ -96,7 +96,7 @@ def _generic_sgd(method, loss, x0, callback=None, num_iters=200, state=None, ful
         grads.append(g)
 
     if full_output:
-        return x, state
+        return x, state, [losses, grads]
     else:
         return x
 
@@ -136,7 +136,7 @@ def _generic_minimize(method, loss, x0,
                       jac=safe_grad,
                       method=method,
                       callback=callback if verbose else None,
-                      options=dict(maxiter=num_iters, disp=verbose),
+                      options=dict(maxiter=num_iters, disp=verbose, return_all=True if full_output else False),
                       tol=tol,
                       **kwargs)
     if verbose:

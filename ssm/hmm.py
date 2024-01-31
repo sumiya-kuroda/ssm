@@ -89,6 +89,7 @@ class HMM(object):
             bernoulli=obs.BernoulliObservations,
             categorical=obs.CategoricalObservations,
             input_driven_obs=obs.InputDrivenObservations,
+            input_driven_obs_multinominal=obs.InputDrivenObservationsMultinominal,
             poisson=obs.PoissonObservations,
             vonmises=obs.VonMisesObservations,
             ar=obs.AutoRegressiveObservations,
@@ -469,7 +470,7 @@ class HMM(object):
             if itr > 0 and abs(lls[-1] - lls[-2]) < tolerance:
                 if verbose == 2:
                   pbar.set_description("Converged to LP: {:.1f}".format(lls[-1]))
-                break
+                  break
 
         return lls
 
