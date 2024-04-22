@@ -213,6 +213,17 @@ def one_hot(z, K):
     zoh = np.reshape(zoh, shp + (K,))
     return zoh
 
+def one_hot_L2(z, K, reguralize_p):
+    z[np.where(z<0), :] = 0 # to run one_hot 
+    z = np.atleast_1d(z).astype(int)
+
+    assert np.all(z >= 0) and np.all(z < K)
+    shp = z.shape
+    N = z.size
+    zoh = np.zeros((N, K))
+    zoh[np.arange(N - reguralize_p), np.arange(K)[np.ravel(z)[:-reguralize_p]]] = 1
+    zoh = np.reshape(zoh, shp + (K,))
+    return zoh
 
 def relu(x):
     return np.maximum(0, x)

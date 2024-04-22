@@ -2,7 +2,7 @@ import autograd.numpy as np
 from autograd.scipy.special import gammaln, logsumexp
 from autograd.scipy.linalg import solve_triangular
 
-from ssm.util import one_hot
+from ssm.util import one_hot, one_hot_L2
 
 
 def flatten_to_dim(X, d):
@@ -582,15 +582,20 @@ def categorical_logpdf(data, logits, mask=None):
     D = data.shape[-1]
     C = logits.shape[-1]
     assert data.dtype in (int, np.int8, np.int16, np.int32, np.int64)
-    assert np.all((data >= 0) & (data < C))
+    assert np.all(data < C) # np.all((data >= 0) & (data < C))
     assert logits.shape[-2] == D
 
     # Check mask
     mask = mask if mask is not None else np.ones_like(data, dtype=bool)
-    assert mask.shape == data.shape
+    # assert mask.shape == data.shape
 
     logits = logits - logsumexp(logits, axis=-1, keepdims=True)      # (..., D, C)
-    x = one_hot(data, C)                                             # (..., D, C)
+    regularize_p = len(np.where(data<0)[0])
+    if regularize_p > 0:
+        x = one_hot_L2(data, C, regularize_p)  
+    else:
+        x = one_hot(data, C)  
+                                        # (..., D, C)
     lls = np.sum(x * logits, axis=-1)                                # (..., D)
     return np.sum(lls * mask, axis=-1)                               # (...,)
 
